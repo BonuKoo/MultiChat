@@ -3,17 +3,17 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class multiChat_Client {
+public class MultiChat_Client {
 
     public static void main(String[] args) {
+
         try {
-            Socket socket = new Socket("127.0.0.1",7777 );
+            Socket socket = new Socket("127.0.0.1",9999 );
             Scanner scanner = new Scanner(System.in);
             System.out.println("User Name :: ");
             String name = scanner.nextLine();
 
             Thread sender = new Thread(new ClientSender(socket,name));
-            //TODO
             Thread receiver = new Thread(new ClientReceiver(socket));
 
             sender.start();
@@ -41,12 +41,9 @@ public class multiChat_Client {
 
         public void run(){
             Scanner scanner = new Scanner(System.in);
-
             try {
-
                 if (dataOutputStream != null)
                     dataOutputStream.writeUTF(name);
-
                 while (dataOutputStream !=null){
                 String message = scanner.nextLine();
                 if (message.equals("quit")) break;

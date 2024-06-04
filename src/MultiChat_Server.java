@@ -1,51 +1,51 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class multiChat_Server {
+public class MultiChat_Server {
 
     HashMap clients;
 
-    public multiChat_Server(HashMap clients) {
-        clients = new HashMap<>();
+    public MultiChat_Server() {
+        clients = new HashMap();
         Collections.synchronizedMap(clients);
     }
 
     public void start(){
         ServerSocket serverSocket = null;
         Socket socket = null;
-
         try {
             serverSocket = new ServerSocket(9999);
             System.out.println("start Server....");
-            while (true){
+            while(true){
                 socket = serverSocket.accept();
-                System.out.println(socket.getInetAddress()+":"+socket.getPort()+"connect!");
-                //TODO : ServerReceiver 구현
-
-
-            }
+                System.out.println(socket.getInetAddress()+":"
+                        +socket.getPort()+"connect!");
+                ServerReceiver thread = new ServerReceiver(socket);
+                thread.start(); //run 실행
+            }//while
         } catch (Exception e ){e.printStackTrace();}
-    }
-
+    }//start
 
     void sendToAll(String message){
         Iterator iterator = clients.keySet().iterator();
         while (iterator.hasNext()){
             try {
-                DataOutputStream dataOutputStream = (DataOutputStream) clients.get(iterator.next());
+                DataOutputStream dataOutputStream =
+                        (DataOutputStream)clients.get(iterator.next());
                 dataOutputStream.writeUTF(message);
-            }catch (Exception e){
+            }catch (IOException e){
                 e.printStackTrace();
             }
-        }
-    }
+        }//while
+    }//sendToAll
 
-    public static void main(String[] args) {}//main Method
+    public static void main(String[] args) {new MultiChat_Server().start();}//main Method
 
         class ServerReceiver extends Thread {
             Socket socket;
